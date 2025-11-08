@@ -31,6 +31,26 @@ def compute_distance_logdist(f_mhz, n, pt, gt, gr, ltx, lrx, loth, fm, sens, d0_
 st.set_page_config(page_title="Wireless Link Budget Calculator", layout="wide")
 st.title("📡 Wireless Link Budget Calculator")
 
+# --- Add Documentation button under title ---
+st.markdown(
+    """
+    <a href="https://melodic-pothos-849816.netlify.app/space%20path%20loss%20&%20link%20budget%20%E2%80%94%20classic%20vs" 
+       target="_blank" 
+       style="
+           display:inline-block;
+           padding:8px 18px;
+           margin-top:8px;
+           background-color:#007bff;
+           color:white;
+           font-weight:600;
+           border-radius:6px;
+           text-decoration:none;">
+       📘 Documentation
+    </a>
+    """,
+    unsafe_allow_html=True
+)
+
 # Sidebar input parameters
 st.sidebar.header("Input Parameters")
 
@@ -87,9 +107,13 @@ d_meters = []
 
 for n_val in n_values:
     if model_type.startswith("Classic"):
-        d_km2, _, _, _, _ = compute_distance_classic(f_mhz, n_val, pt, gt, gr, ltx, lrx, loth, fm, sens)
+        d_km2, _, _, _, _ = compute_distance_classic(
+            f_mhz, n_val, pt, gt, gr, ltx, lrx, loth, fm, sens
+        )
     else:
-        d_km2, _, _, _, _ = compute_distance_logdist(f_mhz, n_val, pt, gt, gr, ltx, lrx, loth, fm, sens, d0_m)
+        d_km2, _, _, _, _ = compute_distance_logdist(
+            f_mhz, n_val, pt, gt, gr, ltx, lrx, loth, fm, sens, d0_m
+        )
     d_meters.append(d_km2 * 1000)
 
 fig, ax = plt.subplots(figsize=(6, 4))
