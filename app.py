@@ -34,7 +34,7 @@ st.title("📡 Wireless Link Budget Calculator")
 # --- Add Documentation button under title ---
 st.markdown(
     """
-    <a href="https://melodic-pothos-849816.netlify.app/space%20path%20loss%20&%20link%20budget%20%E2%80%94%20classic%20vs" 
+    <a href="https://cozy-starship-8fc0e9.netlify.app" 
        target="_blank" 
        style="
            display:inline-block;
