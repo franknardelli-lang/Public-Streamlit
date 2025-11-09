@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Free-Space Path Loss & Link Budget — Classic vs. Log-Distance (Textbook Summary)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A textbook-style, MathJax-formatted summary of free-space path loss (FSPL), link-budget calculations, and a detailed comparison of the classic 1 km model versus the log-distance reference-distance model, including formulas, derivations, units, and worked examples." />
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root {
+      --fg: #1b1f23;
+      --muted: #57606a;
+      --accent: #0b6efd;
+    }
+    body {
+      margin: 2rem auto;
+      max-width: 980px;
+      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--fg);
+      padding: 0 1rem;
+    }
+    h1, h2, h3 { line-height: 1.25; }
+    h1 { font-size: 1.9rem; margin-bottom: .5rem; }
+    h2 { font-size: 1.4rem; margin-top: 2rem; }
+    h3 { font-size: 1.15rem; margin-top: 1.25rem; }
+    p { margin: .75rem 0; }
+    .small { color: var(--muted); font-size: .95rem; }
+    .note, .warn, .tip {
+      padding: .75rem 1rem; border-radius: 8px; margin: 1rem 0;
+      border: 1px solid #e5e7eb; background: #f8fafc;
+    }
+    .warn { background: #fff7ed; border-color: #fed7aa; }
+    .tip { background: #f0fdf4; border-color: #bbf7d0; }
+    code, kbd { background: #f6f8fa; padding: .1rem .35rem; border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { border: 1px solid #e5e7eb; padding: .5rem .6rem; text-align: left; }
+    th { background: #f6f8fa; }
+    hr { border: none; border-top: 1px solid #e5e7eb; margin: 2rem 0; }
+    .eqn-label { color: var(--muted); font-size: .9rem; }
+    .center { text-align: center; }
+    .foot { color: var(--muted); font-size: .9rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+
+  <h1>Free-Space Path Loss & Link Budget — Classic vs. Log-Distance</h1>
+  <p class="small">A concise, textbook-style reference with derivations, units, and worked examples. All equations render with MathJax.</p>
+
+  <hr/>
+
+  <h2>1. Link Budget Fundamentals</h2>
+  <p>
+    A <em>link budget</em> sums gains and losses (in dB) from a transmitter to a receiver. At the maximum usable range,
+    the received power equals the receiver sensitivity threshold. In dB units:
+  </p>
+
+  <p class="center">
+    \[
+      P_{\text{RX}} = P_{\text{TX}} + G_t + G_r - (L_{\text{tx}} + L_{\text{rx}} + L_{\text{other}}) - L_p - \text{FadeMargin}
+    \]
+  </p>
+
+  <p>At the threshold (range limit):</p>
+  <p class="center">
+    \[
+      \text{Sensitivity} \;=\; P_{\text{TX}} + G_t + G_r - (L_{\text{tx}} + L_{\text{rx}} + L_{\text{other}}) - \text{FadeMargin} - L_p
+    \]
+  </p>
+
+  <ul>
+    <li>\(P_{\text{TX}}, P_{\text{RX}}\) in dBm; gains \(G_t, G_r\) in dBi; all losses in dB.</li>
+    <li>\(L_p\) is the propagation (path) loss; the rest are system/cabling/mismatch/penetration terms.</li>
+    <li>FadeMargin is a design margin (e.g., 10–20 dB) to achieve target availability (e.g., 95–99.9%).</li>
+  </ul>
+
+  <div class="note">
+    <strong>Design intent:</strong> Increase <em>FadeMargin</em> for more robust links; increase gains or TX power; reduce in-line losses; or reduce the required sensitivity (e.g., via lower data rate) to extend range.
+  </div>
+
+  <h2>2. Free-Space Path Loss (FSPL)</h2>
+  <h3>2.1 Physical form</h3>
+  <p>
+    Starting from Friis transmission in free space, the path loss (ratio) is:
+  </p>
+  <p class="center">
+    \[
+      L_p = \left(\frac{4\pi d}{\lambda}\right)^2 \quad \Rightarrow \quad
+      L_p\text{(dB)} = 20\log_{10}\!\left(\frac{4\pi d}{\lambda}\right)
+      = 20\log_{10}\!\left(\frac{4\pi d f}{c}\right)
+    \]
+  </p>
+
+  <h3>2.2 “Classic” engineering form (MHz, km)</h3>
+  <p>
+    Choosing distance in kilometers and frequency in megahertz yields the familiar constant:
+  </p>
+  <p class="center">
+    \[
+      \boxed{ \text{FSPL(dB)} = 32.44 + 20\log_{10}(f_{\text{MHz}}) + 20\log_{10}(d_{\text{km}}) }
+    \]
+  </p>
+  <p class="eqn-label">The constant \(32.44\) is purely a units artifact (km &amp; MHz). It corresponds to the free-space loss at 1&nbsp;km when \(f=1\) MHz.</p>
+
+  <div class="tip">
+    You can equivalently use meters &amp; Hz:
+    \[
+      \text{FSPL(dB)} = 20\log_{10}(f_{\text{Hz}}) + 20\log_{10}(d_{\text{m}}) - 147.56
+    \]
+  </div>
+
+  <h2>3. Two Path-Loss Models Used in Practice</h2>
+
+  <h3>3.1 Classic “1&nbsp;km” model with tunable exponent</h3>
+  <p>
+    For non-free-space environments, engineers often generalize the distance exponent from 2 to \(n\):
+  </p>
+  <p class="center">
+    \[
+      \boxed{ L_p = 32.44 + 20\log_{10}(f_{\text{MHz}}) + 10\,n\,\log_{10}(d_{\text{km}}) }
+    \]
+  </p>
+  <p>
+    This is convenient for long-range outdoor links; it implicitly anchors the model at <strong>1&nbsp;km</strong>.
+    When \(n=2\) it reduces to FSPL.
+  </p>
+
+  <h3>3.2 Log-distance model with a reference distance \(d_0\)</h3>
+  <p>
+    A more general (and often more realistic) model for indoor/short-range is the <em>log-distance</em> form:
+  </p>
+  <p class="center">
+    \[
+      \boxed{ L_p(d) = PL(d_0) + 10\,n\,\log_{10}\!\left(\frac{d}{d_0}\right) }
+    \]
+  </p>
+  <ul>
+    <li>\(d_0\) is a chosen <em>reference distance</em> (commonly \(1\) m for Wi-Fi/BLE/IoT; sometimes \(3\) or \(10\) m).</li>
+    <li>\(PL(d_0)\) is the <em>measured</em> or FSPL loss at \(d_0\).
+      For FSPL at \(d_0\): \(PL(d_0) = 20\log_{10}(4\pi d_0 f / c)\).</li>
+    <li>When \(n=2\) and \(PL(d_0)\) is set by FSPL, this model reproduces free-space exactly.</li>
+  </ul>
+
+  <div class="note">
+    <strong>How they differ conceptually:</strong>
+    The classic model accumulates the \(10n\log d\) term from 1&nbsp;km outward; the log-distance model accumulates it from \(d_0\) outward (e.g., 1&nbsp;m). For the same \(n &gt; 2\), the log-distance model will typically predict <em>shorter</em> ranges for short-range systems because attenuation “starts counting” near the transmitter.
+  </div>
+
+  <h2>4. Solving the Link Budget for Range</h2>
+
+  <h3>4.1 Define the net constant \(C\)</h3>
+  <p>
+    Group the terms that do not depend on distance:
+  </p>
+  <p class="center">
+    \[
+      C \;\equiv\; P_{\text{TX}} + G_t + G_r - (L_{\text{tx}} + L_{\text{rx}} + L_{\text{other}})
+      - \text{FadeMargin} - \text{Sensitivity}
+    \]
+  </p>
+
+  <h3>4.2 Classic model (km/MHz anchor)</h3>
+  <p>
+    Insert the classic form of \(L_p\) and solve for \(d_{\text{km}}\):
+  </p>
+  <p class="center">
+    \[
+      \begin{aligned}
+        \text{Sensitivity}
+        &= P_{\text{TX}} + G_t + G_r - (L_{\text{tx}} + L_{\text{rx}} + L_{\text{other}})
+           - \text{FadeMargin} - \left[32.44 + 20\log_{10}(f_{\text{MHz}}) + 10n\log_{10}(d_{\text{km}})\right] \\
+        \Rightarrow\quad
+        10n\log_{10}(d_{\text{km}})
+        &= C - \left[32.44 + 20\log_{10}(f_{\text{MHz}})\right] \\
+        \Rightarrow\quad
+        \boxed{ d_{\text{km}} = 10^{\;\dfrac{\,C - \left(32.44+20\log_{10} f_{\text{MHz}}\right)}{10n}} }
+      \end{aligned}
+    \]
+  </p>
+
+  <p>
+    It is often helpful to define
+    \(\;C_{\!\text{classic}} \equiv C - \big(32.44+20\log_{10} f_{\text{MHz}}\big)\),
+    which is the <em>excess budget relative to 1&nbsp;km at the chosen frequency</em>.
+    Then \(d_{\text{km}} = 10^{\,C_{\!\text{classic}}/(10n)}\).
+  </p>
+
+  <h3>4.3 Log-distance model (arbitrary \(d_0\))</h3>
+  <p>
+    Insert \(L_p(d) = PL(d_0) + 10n\log_{10}(d/d_0)\) and solve for \(d\):
+  </p>
+  <p class="center">
+    \[
+      \begin{aligned}
+        \text{Sensitivity}
+        &= P_{\text{TX}} + G_t + G_r - (L_{\text{tx}} + L_{\text{rx}} + L_{\text{other}})
+           - \text{FadeMargin} - \left[PL(d_0) + 10n\log_{10}\!\left(\frac{d}{d_0}\right)\right] \\
+        \Rightarrow\quad
+        10n\log_{10}\!\left(\frac{d}{d_0}\right)
+        &= C - PL(d_0) \\
+        \Rightarrow\quad
+        \boxed{ d = d_0 \cdot 10^{\;\dfrac{\,C - PL(d_0)}{10n}} }
+      \end{aligned}
+    \]
+  </p>
+
+  <div class="tip">
+    <strong>Interpretation of \(C\):</strong>
+    \(C\) is your net “power headroom” (in dB). In the classic model it’s compared to the 1&nbsp;km frequency term; in the log-distance model it’s compared to \(PL(d_0)\).
+  </div>
+
+  <h2>5. Choosing the Exponent \(n\) and Reference \(d_0\)</h2>
+  <table>
+    <thead>
+      <tr><th>Environment</th><th>Typical \(n\)</th><th>Notes / \(d_0\)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Free space (LOS)</td><td>2.0</td><td>Use FSPL; either model with consistent reference gives the same result.</td></tr>
+      <tr><td>Suburban / light indoor</td><td>2.3–3.0</td><td>Log-distance with \(d_0\in[1,3]\) m often fits measured data well.</td></tr>
+      <tr><td>Office / NLOS</td><td>3.0–4.5</td><td>Walls/obstructions raise \(n\); add fixed penetration losses into \(L_{\text{other}}\).</td></tr>
+      <tr><td>Dense urban / harsh indoor</td><td>4.5–6.0+</td><td>Range collapses quickly; higher FadeMargin advisable.</td></tr>
+      <tr><td>Microwave backhaul / satellite</td><td>≈2.0</td><td>Classic model convenient; distances in km; \(d_0 = 1\) km implicit.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn">
+    <strong>Unit consistency matters:</strong> The classic formula expects km &amp; MHz (constant 32.44).
+    If you mix meters or Hz without adjusting the constant, results will be wrong.
+  </div>
+
+  <h2>6. Worked Comparisons (2.4&nbsp;GHz)</h2>
+
+  <h3>Parameters</h3>
+  <ul>
+    <li>\(f = 2400\ \text{MHz}\), \(P_{\text{TX}}=20\ \text{dBm}\), \(G_t=2\ \text{dBi}\), \(G_r=2\ \text{dBi}\)</li>
+    <li>\(L_{\text{tx}}=1\ \text{dB}\), \(L_{\text{rx}}=1\ \text{dB}\), \(L_{\text{other}}=0\ \text{dB}\)</li>
+    <li>\(\text{FadeMargin}=10\ \text{dB}\), \(\text{Sensitivity}=-90\ \text{dBm}\)</li>
+  </ul>
+  <p>
+    Net constant:
+    \[
+      C = 20 + 2 + 2 - (1+1+0) - 10 - (-90) = 102\ \text{dB}
+    \]
+  </p>
+
+  <h3>6.1 Classic model</h3>
+  <p>
+    Frequency term at 1&nbsp;km:
+    \[
+      32.44 + 20\log_{10}(2400) \approx 100.04\ \text{dB}
+    \]
+    So \(C_{\!\text{classic}} \approx 102 - 100.04 = 1.96\ \text{dB}\).
+  </p>
+  <ul>
+    <li>\(n=2\): \(d \approx 10^{1.96/20} \approx 1.25\ \text{km}\)</li>
+    <li>\(n=4\): \(d \approx 10^{1.96/40} \approx 1.12\ \text{km}\) &mdash; only ~10–11% less than \(n=2\).</li>
+  </ul>
+  <p class="small">
+    Small change because \(C_{\!\text{classic}}\) is small (you are already near the 1&nbsp;km reference loss).
+  </p>
+
+  <h3>6.2 Log-distance model (\(d_0 = 1\ \text{m}\))</h3>
+  <p>
+    FSPL at 1&nbsp;m (2.4&nbsp;GHz) is \(PL(d_0)\approx 40.05\ \text{dB}\).
+    Then \(C - PL(d_0)\approx 61.95\ \text{dB}\).
+  </p>
+  <ul>
+    <li>\(n=2\): \(d \approx 1\,\text{m}\cdot 10^{61.95/20} \approx 1\,\text{m}\cdot 10^{3.097} \approx 1250\ \text{m}\) (same as classic within rounding)</li>
+    <li>\(n=4\): \(d \approx 1\,\text{m}\cdot 10^{61.95/40} \approx 1\,\text{m}\cdot 10^{1.549} \approx 35\ \text{m}\)</li>
+  </ul>
+  <p class="small">
+    Here the difference is dramatic: because the attenuation growth starts at 1&nbsp;m, the total loss accrues much faster when \(n&gt;2\).
+  </p>
+
+  <h2>7. Practical Guidance</h2>
+  <ul>
+    <li><strong>Short-range / indoor (Wi-Fi, BLE, IoT):</strong> Use log-distance with \(d_0 \approx 1\) m and environment-appropriate \(n\). Add fixed penetration losses into \(L_{\text{other}}\).</li>
+    <li><strong>Outdoor LOS / long-range:</strong> Classic model is convenient; distances in km, \(n\approx 2\); include terrain clutter in \(L_{\text{other}}\) if needed.</li>
+    <li><strong>Fade margin:</strong> Choose per reliability target (e.g., 10–20 dB) and expected fading statistics.</li>
+    <li><strong>Sensitivity &amp; data rate:</strong> Lower data rate usually improves sensitivity; re-compute \(C\) and range.</li>
+    <li><strong>Always keep units consistent</strong> with the chosen model form.</li>
+  </ul>
+
+  <h2>8. Common Pitfalls</h2>
+  <ul>
+    <li>Mixing meters with the 32.44 constant (which expects km &amp; MHz).</li>
+    <li>Forgetting that \(n\) applies to <em>distance growth beyond the reference</em> (1&nbsp;km in classic; \(d_0\) in log-distance).</li>
+    <li>Neglecting fixed losses (connectors, duplexers, walls) that should be in \(L_{\text{tx}}, L_{\text{rx}}, L_{\text{other}}\).</li>
+    <li>Using \(n\) outside realistic ranges without measurement validation.</li>
+  </ul>
+
+  <hr/>
+
+  <p class="foot">
+    Summary: The classic model with the 32.44 constant is a convenient km/MHz expression and is ideal for long-range links.
+    The log-distance model generalizes to any reference distance and is usually the right choice for short-range/indoor evaluation.
+    Both reduce to FSPL when \(n=2\), but for \(n&gt;2\) they diverge because they anchor at different reference points.
+  </p>
+</body>
+</html>
